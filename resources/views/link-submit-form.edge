@@ -1,0 +1,38 @@
+@layout('layout.form')
+
+@section('content')
+
+
+<div class="row justify-content-center">
+	<div class="col-md-6">
+		<span class="anchor" id="formLogin"></span> 
+
+		@if( flashMessage('error') )
+		<div class="row">
+			<div class="col-ld-12">
+				<div class="alert alert-danger">{{ flashMessage('error') }}</div>
+			</div>
+		</div>
+		@endif
+
+		<!-- form card login -->
+		<div class="card card-outline-secondary">
+			<div class="card-header">
+				<h3 class="mb-0">Input</h3>
+			</div>
+			<div class="card-body">
+				<form method="POST" action="/simpan">
+					{{ csrfField() }}
+					<div class="form-group">
+						<label for="link">Product Link</label> 
+						<input class="form-control" name="link" type="text">
+					</div>
+					<button class="btn btn-success btn-lg float-right" type="submit">Login</button>
+					<p>{{ link }}</p>
+				</form>
+			</div><!--/card-block-->
+		</div><!-- /form card login -->
+	</div>
+</div>
+
+@endsection
