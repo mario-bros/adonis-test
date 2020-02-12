@@ -41,6 +41,7 @@
     "clockwork": "^0.1.4",
     "cloudinary": "^1.13.2",
     "fbgraph": "^1.4.4",
+    "firebase": "^7.8.1",
     "github": "^14.0.0",
     "got": "^9.6.0",
     "instagram-node": "^0.5.8",

@@ -16,6 +16,7 @@ const Route = use('Route')
 
 Route.get('/', 'HomeController.index').as('welcomePage')
 Route.post('/simpan', 'HomeController.postSimpan').as('Link.store')
+Route.get('/list', 'HomeController.listLink')
 // Route.post('/simpan', 'ContactController.sendMessage').as('Link.store')
 // Route.post('/simpan', 'LinkedinController.postSimpan').as('Link.store')
 
