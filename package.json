@@ -50,6 +50,7 @@
     "lodash": "^4.17.11",
     "moment": "^2.24.0",
     "mysql": "^2.16.0",
+    "node-cron": "^2.0.3",
     "node-foursquare": "^0.4.6",
     "node-instagram": "^4.3.0",
     "node-linkedin": "^0.5.6",

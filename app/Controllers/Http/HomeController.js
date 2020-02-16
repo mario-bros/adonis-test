@@ -24,7 +24,7 @@ class HomeController {
       if ( hostName == validURL ) {
         // Must be a valid domain name
         await axios(inputLink)
-          .then(resp => {
+          .then( async resp => {
             // console.log(resp);
             
             const $ = cheerio.load(resp.data)
@@ -32,7 +32,7 @@ class HomeController {
             let price = $('span[id^="product-price-"]').text()
             price = price.trim()
             let currentPriceTime = firebaseTS
-            productPrices.push({ price: price, currentPrice: currentPriceTime })
+            productPrices.push({ currentPrice: price, timestamp: currentPriceTime })
   
             linksCollection.add({
               link: inputLink,
@@ -40,10 +40,20 @@ class HomeController {
               productPrices: productPrices,
               created_time: firebaseTS
             })
+
+            let createdData = linksCollection.where('created_time', '==', firebaseTS)
+            let lastDocId = ''
+            await createdData.get().then( querySnapshot => {
+              querySnapshot.forEach( doc => {
+                lastDocId = doc.id
+                // console.log( doc.id, ' => ', doc.data());
+              })
+            })
   
             session.flash({ success: 'URL already saved to database' })
             // response.redirect('back')
-            response.redirect('/list')
+            // response.redirect('/list')
+            response.redirect('/link-detail/' + lastDocId)
           })
           .catch(err => {
             console.log(err);
@@ -84,6 +94,27 @@ class HomeController {
 
     console.log("usersArray => ", linksArray)
     return view.render('list-link', {links: linksArray})
+  }
+
+  async linkDetail ({ params, view }) {
+    const docID = params.docID
+    let linkRef = linksCollection.doc(docID);
+    let detailLink = {}
+
+    await linkRef.get()
+      .then(doc => {
+        if (!doc.exists) {
+          console.log('No such document!');
+        } else {
+          detailLink = doc.data()
+          console.log('Document data:', doc.data());
+        }
+      })
+      .catch(err => {
+        console.log('Error getting document', err);
+      })
+
+    return view.render('detail-link', {detailLink: detailLink})
   }
 }
 
