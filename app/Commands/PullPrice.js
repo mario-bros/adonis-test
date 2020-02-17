@@ -8,15 +8,14 @@ const cheerio = use('cheerio')
 
 class PullPrice extends Command {
   static get signature () {
-    return 'quote'
+    return 'pullPrice'
   }
 
   static get description () {
-    return 'Tell something helpful about this command'
+    return 'Pull latest price from fabelio product page'
   }
 
   async handle (args, options) {
-    this.info('Dummy implementation for quote command')
     let self = this
 
     cron.schedule("* * * * *", () => {
