@@ -3,6 +3,8 @@
 const { Command } = require('@adonisjs/ace')
 const cron = require("node-cron")
 const {firebase, linksCollection} = use('App/Helpers')
+const axios = use('axios')
+const cheerio = use('cheerio')
 
 class PullPrice extends Command {
   static get signature () {
@@ -53,20 +55,38 @@ class PullPrice extends Command {
 
             firebase.firestore().runTransaction(transaction => {
               // This code may get re-run multiple times if there are conflicts.
-              return transaction.get(linkDocRef).then(doc => {
-                  if (!doc.data().productPrices) {
-                      transaction.set({
-                        productPrices: [ { timestamp: currentTimestamp, currentPrice: 'Rp 2.999' } ]
-                      });
-                  } else {
-                      // const productPrices = fbData.productPrices
-                      // productPrices.push({ currentPrice: 0, price: 'Rp 2.999' })
-                      // transaction.update(fbData, { productPrices: productPrices })
+              return transaction.get(linkDocRef).then( async doc => {
 
-                      const productPrices = foundDocument.data().productPrices
-                      productPrices.push({ timestamp: currentTimestamp, currentPrice: 'Rp 2.999' })
+                await axios(fbData.link)
+                  .then( async resp => {
+                    
+                    const $ = cheerio.load(resp.data)
+                    let price = $('span[id^="product-price-"]').text()
+                    price = price.trim()
+          
+                    if (!doc.data().productPrices) {
+                      transaction.set({
+                        productPrices: [ { timestamp: currentTimestamp, currentPrice: price } ]
+                      });
+                    } else {
+                        // const productPrices = fbData.productPrices
+                        // productPrices.push({ currentPrice: 0, price: 'Rp 2.999' })
+                        // transaction.update(fbData, { productPrices: productPrices })
+    
+                      let productPrices = foundDocument.data().productPrices
+                      productPrices.push({ timestamp: currentTimestamp, currentPrice: price })
                       transaction.update(linkDocRef, { productPrices: productPrices })
-                  }
+                    }
+                  })
+                  .catch(err => {
+                    console.log(err);
+
+                    const $ = cheerio.load(err.response.data)
+                    let notFoundText = $('#maincontent .notfound-content').text()
+                    // let notFoundText = 'Hello'
+
+                    console.log(notFoundText);
+                  });
               });
             }).then(function () {
                 console.log("Transaction successfully committed!");
@@ -74,15 +94,8 @@ class PullPrice extends Command {
                 console.log("Transaction failed: ", error);
             });
 
-            // doc.update({
-            //   productPrices: firebase.firestore.FieldValue.arrayUnion({ currentPrice: 0, price: 'Rp 2.999' })
-            // })
             console.log("diff more than 1 hour");
           }
-          // fbData.productPrices.forEach( priceObj => {
-          //   priceObj.current
-          // })
-          // linksArray.push(fbData)
         })
       }
 
