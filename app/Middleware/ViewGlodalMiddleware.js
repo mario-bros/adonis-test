@@ -4,6 +4,8 @@ const moment = require('moment')
 
 class ViewGlodalMiddleware {
   async handle ({ request }, next) {
+    edge.global('currentUrl', () => request.url())
+
     edge.global('currentYear', () => moment().format('YYYY'))
 
     edge.global('inArray', (arr, needle) => {
