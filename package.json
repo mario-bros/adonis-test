@@ -35,7 +35,7 @@
     "@slack/client": "^4.8.0",
     "allyproviders": "https://github.com/iamraphson/AllyProviders/tarball/master",
     "async": "^2.6.1",
-    "axios": "^0.19.2",
+    "axios": "^0.21.1",
     "blueimp-md5": "^2.10.0",
     "cheerio": "^1.0.0-rc.3",
     "clockwork": "^0.1.4",
